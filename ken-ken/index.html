@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Ken Ken Puzzle</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="kenken.js" type="module"></script>
+        <script src="kenken_ui.js"></script>
+        <script src="test.js" type="module"></script>
+    </head>
+    <body>
+        <div class="controls">
+            <input type="number" id="input-puzzle-size" value="3">
+            <input type="button" value="Reset" onclick="onReset()">
+        </div>
+
+        <div class="controls">
+            <input type="button" value="Deselect All" onclick="deselectAll()">
+            <input type="button" value="Group Selected" onclick="groupSelected()">
+            <input type="button" value="Solve" onclick="solve()">
+        </div>
+
+        <div id="puzzle-container"></div>
+
+        <script>
+            const kenkenUI = new KenKenUI('puzzle-container');
+            const sizeInput = document.getElementById('input-puzzle-size');
+
+            function onReset() {
+                kenkenUI.reset(sizeInput.value);
+            }
+
+            function groupSelected() {
+                kenkenUI.groupSelected();
+            }
+
+            function solve() {
+                kenkenUI.solve();
+            }
+
+            // Create initial board
+            kenkenUI.init(sizeInput.value);
+        </script>
+    </body>
+</html>

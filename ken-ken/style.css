@@ -1,0 +1,47 @@
+.controls {
+    margin-bottom: 1em;
+}
+
+.row {
+    white-space: nowrap;
+}
+
+.cell {
+    border: 1px solid #aaa;
+    
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    position: relative;
+    text-align: center;
+}
+
+.cell.selected {
+    background: lightblue;
+}
+
+.cell.border-top {
+    border-top: 1px solid black;
+}
+.cell.border-right {
+    border-right: 1px solid black;
+}
+.cell.border-bottom {
+    border-bottom: 1px solid black;
+}
+.cell.border-left {
+    border-left: 1px solid black;
+}
+
+.cell .label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-weight: bold;
+}
+
+.cell .solved {
+    position: relative;
+    top: 25%;
+}
