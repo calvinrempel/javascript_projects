@@ -6,11 +6,34 @@ const context = canvas.getContext('2d');
 document.addEventListener('keydown', onKeydown);
 document.addEventListener('keyup', onKeyup);
 
+// Image loading stuff
+let imagesLoading = 0;
+let isLoading = true;
+let images = {};
+
+function loadImage(imageSrc) {
+  imagesLoading += 1;
+  const image = new Image();
+  image.onload = function() {
+    imagesLoading -= 1;
+    images[imageSrc] = image;
+
+    if (imagesLoading === 0) {
+      isLoading = false;
+    }
+  };
+  image.src = imageSrc;
+}
+
+// Load images
+loadImage('./media/images/asteroid.png');
+loadImage('./media/images/ship.png');
+
+// Player setup stuff
 let playerX = 50;
 let playerY = 150;
 let playerSpeed = 30;
 
-// setInterval(updateGame, 100);
 setInterval(makeAsteroid, 1000);
 
 let asteroids = [];
@@ -36,30 +59,44 @@ let lastTime = (new Date()).getTime();
 
 
 function updateGame(timestamp) {
-  const timeDifference = timestamp - lastTime;
-  const secondsDifference = timeDifference / 1000;
-  lastTime = timestamp;
+  if (isLoading) {
+    // Do nothing
+  } else {
+    const timeDifference = timestamp - lastTime;
+    const secondsDifference = timeDifference / 1000;
+    lastTime = timestamp;
 
-  if (isKeyDown('ArrowUp')) {
-    playerY = playerY - (playerSpeed * secondsDifference);
-  } else if (isKeyDown('ArrowDown')) {
-    playerY = playerY + (playerSpeed * secondsDifference);
-  }
+    if (isKeyDown('ArrowUp')) {
+      playerY = playerY - (playerSpeed * secondsDifference);
+    } else if (isKeyDown('ArrowDown')) {
+      playerY = playerY + (playerSpeed * secondsDifference);
+    }
+    
+    if (isKeyDown('ArrowLeft')) {
+      playerX = playerX - (playerSpeed * secondsDifference);
+    } else if (isKeyDown('ArrowRight')) {
+      playerX = playerX + (playerSpeed * secondsDifference);
+    }
 
-  if (isKeyDown('ArrowLeft')) {
-    playerX = playerX - (playerSpeed * secondsDifference);
-  } else if (isKeyDown('ArrowRight')) {
-    playerX = playerX + (playerSpeed * secondsDifference);
-  }
+    let i = 0;
+    while (i < asteroids.length) {
+      const asteroid = asteroids[i];
 
-  for (const asteroid of asteroids) {
-    asteroid.x -= asteroid.speed * secondsDifference;
-    asteroid.speed += 0.50 * secondsDifference;
+      asteroid.x -= asteroid.speed * secondsDifference;
+      asteroid.speed += 1.50 * secondsDifference;
 
-    const didPlayerHitAsteroid = isColliding(playerX, playerY, 10, asteroid.x, asteroid.y, 20);
-    if (didPlayerHitAsteroid) {
-      background = 'red';
-      isGameOver = true;
+      const didPlayerHitAsteroid = isColliding(playerX, playerY, 15, asteroid.x, asteroid.y, 20);
+      if (didPlayerHitAsteroid) {
+        background = 'red';
+        isGameOver = true;
+      }
+
+      if (asteroid.x < -100) {
+        const index = asteroids.indexOf(asteroid);
+        asteroids.splice(index, 1);
+      }
+
+      i += 1;
     }
   }
 
@@ -84,24 +121,29 @@ function isKeyDown(code) {
 }
 
 function makeAsteroid() {
-  const asteroid = {
-    x: 350,
-    y: Math.random() * 300,
-    speed: 50
-  };
+  if (!isGameOver) {
+    const asteroid = {
+      x: 350,
+      y: Math.random() * 300,
+      speed: 50
+    };
 
-  asteroids.push(asteroid);
+    asteroids.push(asteroid);
+  }
 }
 
 function draw() {
   drawBackground();
-  drawPlayer(playerX, playerY);
-
-  for (const asteroid of asteroids) {
-    drawAsteroid(asteroid.x, asteroid.y);
-  }
-  if (isGameOver) {
+  if (isLoading) {
+    drawLoading();
+  } else if (isGameOver) {
     drawGameOver();
+  } else {
+    drawPlayer(playerX, playerY);
+
+    for (const asteroid of asteroids) {
+      drawAsteroid(asteroid.x, asteroid.y);
+    }
   }
 }
 
@@ -111,23 +153,32 @@ function drawBackground() {
 }
 
 function drawPlayer(x, y) {
-  context.fillStyle = 'blue';
-  context.beginPath();
-  context.arc(x, y, 10, 0, 2 * Math.PI);
-  context.fill();
+  const width = 40;
+  const height = 40;
+
+  context.drawImage(
+    images['./media/images/ship.png'],
+    x - 20,
+    y - 20,
+    width,
+    height
+  );
 }
 
 function drawAsteroid(x, y) {
-  context.fillStyle = 'green';
-  context.beginPath();
-  context.arc(x, y, 20, 0, 2 * Math.PI);
-  context.fill();
+  context.drawImage(images['./media/images/asteroid.png'], x - 20, y - 20);
 }
 
 function drawGameOver() {
     context.fillStyle = 'white';
     
     context.fillText("Game Over refresh page if you want to play again", 10, 100);
+}
+
+function drawLoading() {
+  context.fillStyle = 'white';
+  
+  context.fillText("Loading...", 10, 100);
 }
 
 function isColliding(x1, y1, r1, x2, y2, r2) {
