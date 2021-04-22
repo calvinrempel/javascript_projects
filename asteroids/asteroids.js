@@ -34,7 +34,17 @@ let playerX = 50;
 let playerY = 150;
 let playerSpeed = 30;
 
-setInterval(makeAsteroid, 1000);
+let ufoParticles = new ParticleSystem(
+  playerX,
+  playerY,
+  100,
+  'green',
+  1,
+  0.5,
+  { x: 0, y: 1 }
+);
+
+// setInterval(makeAsteroid, 1000);
 
 let asteroids = [];
 
@@ -59,31 +69,42 @@ let lastTime = (new Date()).getTime();
 
 
 function updateGame(timestamp) {
+  const timeDifference = timestamp - lastTime;
+  const secondsDifference = timeDifference / 1000;
+  lastTime = timestamp;
+
   if (isLoading) {
     // Do nothing
   } else {
-    const timeDifference = timestamp - lastTime;
-    const secondsDifference = timeDifference / 1000;
-    lastTime = timestamp;
-
+    let shouldPlayerParticlesBeOn = false;
     if (isKeyDown('ArrowUp')) {
       playerY = playerY - (playerSpeed * secondsDifference);
+      shouldPlayerParticlesBeOn = true;
     } else if (isKeyDown('ArrowDown')) {
       playerY = playerY + (playerSpeed * secondsDifference);
+      shouldPlayerParticlesBeOn = true;
     }
     
     if (isKeyDown('ArrowLeft')) {
       playerX = playerX - (playerSpeed * secondsDifference);
+      shouldPlayerParticlesBeOn = true;
     } else if (isKeyDown('ArrowRight')) {
       playerX = playerX + (playerSpeed * secondsDifference);
+      shouldPlayerParticlesBeOn = true;
     }
 
-    let i = 0;
-    while (i < asteroids.length) {
-      const asteroid = asteroids[i];
+    if (shouldPlayerParticlesBeOn !== ufoParticles.on) {
+      if (shouldPlayerParticlesBeOn) {
+        ufoParticles.turnOn()
+      } else {
+        ufoParticles.turnOff();
+      }
+    }
+    ufoParticles.update(secondsDifference);
 
+    asteroids.forEach(asteroid => {
       asteroid.x -= asteroid.speed * secondsDifference;
-      asteroid.speed += 1.50 * secondsDifference;
+      asteroid.speed += 2.50 * secondsDifference;
 
       const didPlayerHitAsteroid = isColliding(playerX, playerY, 15, asteroid.x, asteroid.y, 20);
       if (didPlayerHitAsteroid) {
@@ -95,12 +116,10 @@ function updateGame(timestamp) {
         const index = asteroids.indexOf(asteroid);
         asteroids.splice(index, 1);
       }
-
-      i += 1;
-    }
+    });
   }
 
-  draw();
+  draw(secondsDifference);
   requestAnimationFrame(updateGame);
 }
 requestAnimationFrame(updateGame);
@@ -116,8 +135,8 @@ function onKeyup(event) {
   keysDown[key] = false;
 }
 
-function isKeyDown(code) {
-  return keysDown[code] === true;
+function isKeyDown(key) {
+  return keysDown[key] === true;
 }
 
 function makeAsteroid() {
@@ -140,10 +159,7 @@ function draw() {
     drawGameOver();
   } else {
     drawPlayer(playerX, playerY);
-
-    for (const asteroid of asteroids) {
-      drawAsteroid(asteroid.x, asteroid.y);
-    }
+    asteroids.forEach(asteroid => drawAsteroid(asteroid.x, asteroid.y));
   }
 }
 
@@ -156,6 +172,9 @@ function drawPlayer(x, y) {
   const width = 40;
   const height = 40;
 
+  ufoParticles.setPosition(x, y);
+  ufoParticles.draw(context);
+
   context.drawImage(
     images['./media/images/ship.png'],
     x - 20,
@@ -163,6 +182,8 @@ function drawPlayer(x, y) {
     width,
     height
   );
+
+  
 }
 
 function drawAsteroid(x, y) {
@@ -171,13 +192,11 @@ function drawAsteroid(x, y) {
 
 function drawGameOver() {
     context.fillStyle = 'white';
-    
     context.fillText("Game Over refresh page if you want to play again", 10, 100);
 }
 
 function drawLoading() {
   context.fillStyle = 'white';
-  
   context.fillText("Loading...", 10, 100);
 }
 
