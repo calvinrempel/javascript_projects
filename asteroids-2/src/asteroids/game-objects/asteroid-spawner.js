@@ -15,12 +15,12 @@ export class AsteroidSpawner extends GameObject {
     }
 
     update(secondsDifference) {
-        // const currentTime = (new Date()).getTime();
-        // if (currentTime > this.nextSpawnTime) {
-        //     this._spawnAsteroid();
-        //     const millisecondsToNextSpawn = (1000 / this.asteroidsPerSecond);
-        //     this.nextSpawnTime = currentTime + millisecondsToNextSpawn;
-        // }
+        const currentTime = (new Date()).getTime();
+        if (currentTime > this.nextSpawnTime) {
+            this._spawnAsteroid();
+            const millisecondsToNextSpawn = (1000 / this.asteroidsPerSecond);
+            this.nextSpawnTime = currentTime + millisecondsToNextSpawn;
+        }
     }
 
     _spawnAsteroid() {

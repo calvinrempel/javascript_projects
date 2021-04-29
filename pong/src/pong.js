@@ -1,8 +1,8 @@
+import { PongTitleScreen } from './pong/game-screens/pong-title-screen.js';
 import { Game } from './core/game/game.js';
-import { TestScreen } from './my-new-game/test-scene.js';
 
 const canvas = document.getElementById('canvas');
-const titleScreen = new TestScreen();
+const titleScreen = new PongTitleScreen();
 
 const game = new Game({
     canvas: canvas,

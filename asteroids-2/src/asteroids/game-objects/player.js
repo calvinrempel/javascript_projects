@@ -10,42 +10,42 @@ export class Player extends GameObject {
         super({x, y});
         this.speed = 50;
         this.radius = 20;
-        this.middleParticles = new DrawableParticleSystem(
-            this.radius,
-            this.radius + 15,
-            1000,
-            'green',
-            1,
-            0.06,
-            { x: 0, y: 5 },
-            { width: 4, height: 1 }
-        );
 
-        this.leftParticles = new DrawableParticleSystem(
-            this.radius - 7,
-            this.radius + 10,
-            100,
-            'green',
-            1,
-            0.25,
-            { x: 0.1, y: 1 },
-            { width: 5, height: 5 }
-        );
+        this.middleParticles = new DrawableParticleSystem({
+            x: this.radius,
+            y: this.radius + 15,
+            particlesPerSecond: 75,
+            particleColor: 'rgba(0, 255, 0, 0.2)',
+            particleSize: 4,
+            particleLifeSpanSeconds: 0.25,
+            particleSpeed: { x: 0, y: 70 },
+            particleGrowthRate: -12,
+            creationBox: { width: 3, height: 1 }
+        });
 
-        this.rightParticles = new DrawableParticleSystem(
-            this.radius + 7,
-            this.radius + 10,
-            100,
-            'green',
-            1,
-            0.25,
-            { x: 0, y: 1 },
-            { width: 5, height: 5 }
-        );
+        this.leftParticles = new DrawableParticleSystem({
+            x: this.radius - 7,
+            y: this.radius + 10,
+            particlesPerSecond: 75,
+            particleColor: 'rgba(0, 255, 0, 0.2)',
+            particleSize: 4,
+            particleLifeSpanSeconds: 0.25,
+            particleSpeed: { x: 15, y: 70 },
+            particleGrowthRate: -12,
+            creationBox: { width: 3, height: 1 }
+        });
 
-        this.leftParticles.turnOn();
-        this.rightParticles.turnOn();
-        this.middleParticles.turnOn();
+        this.rightParticles = new DrawableParticleSystem({
+            x: this.radius + 7,
+            y: this.radius + 10,
+            particlesPerSecond: 75,
+            particleColor: 'rgba(0, 255, 0, 0.2)',
+            particleSize: 4,
+            particleLifeSpanSeconds: 0.25,
+            particleSpeed: { x: -15, y: 70 },
+            particleGrowthRate: -12,
+            creationBox: { width: 3, height: 1 }
+        });
     }
 
     create() {
@@ -61,18 +61,36 @@ export class Player extends GameObject {
     }
 
     update(secondsDifference) {
+        let shouldParticlesBeOn = false;
+
         // Move up/down
         if (this.getInput().isKeyDown('ArrowUp')) {
             this.y -= this.speed * secondsDifference;
+            shouldParticlesBeOn = true;
         } else if (this.getInput().isKeyDown('ArrowDown')) {
             this.y += this.speed * secondsDifference;
+            shouldParticlesBeOn = true;
         }
 
         // Move left/right
         if (this.getInput().isKeyDown('ArrowLeft')) {
             this.x -= this.speed * secondsDifference;
+            shouldParticlesBeOn = true;
         } else if (this.getInput().isKeyDown('ArrowRight')) {
             this.x += this.speed * secondsDifference;
+            shouldParticlesBeOn = true;
+        }
+
+        if (shouldParticlesBeOn !== this.middleParticles.on) {
+            if (shouldParticlesBeOn) {
+                this.leftParticles.turnOn();
+                this.rightParticles.turnOn();
+                this.middleParticles.turnOn();
+            } else {
+                this.leftParticles.turnOff();
+                this.rightParticles.turnOff();
+                this.middleParticles.turnOff();
+            }
         }
     }
 }
