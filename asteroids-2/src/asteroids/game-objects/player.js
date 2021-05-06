@@ -7,7 +7,10 @@ import { AsteroidsGameOverScreen } from '../game-screens/asteroids-game-over-scr
 
 export class Player extends GameObject {
     constructor(x, y) {
-        super({x, y});
+        super({
+            x: x,
+            y: y
+        });
         this.speed = 50;
         this.radius = 20;
 

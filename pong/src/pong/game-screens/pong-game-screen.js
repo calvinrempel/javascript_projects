@@ -11,8 +11,10 @@ export class PongGameScreen extends GameScreen {
 
     create() {
         const {height}= this.getGameSize();
-        const player = new Player();
+        const player = new Player( 10, height/2 - 75/2  );
         this.addGameObject(player);
 
+        const player2 = new Player( 250, height/2 - 75/2  );
+        this.addGameObject(player2);
     }
 }
