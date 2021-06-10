@@ -8,7 +8,7 @@ const gameScreen = new PongGameScreen();
 
 const game = new Game({
     canvas: canvas,
-    width: 300,
+    width: 600,
     height: 300,
     firstGameScreen: gameScreen,
     imageURLs: []

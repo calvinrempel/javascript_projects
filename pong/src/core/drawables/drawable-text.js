@@ -10,9 +10,14 @@ export class DrawableText extends GameDrawable {
     }
 
     draw(secondsDiff, context2d) {
+        let t = this.text;
+        if (typeof this.text === 'function') {
+            t = this.text();
+        }
+
         const {x, y} = this.getPosition();
         context2d.font = this.fontStyle;
         context2d.fillStyle = this.color;
-        context2d.fillText(this.text, x, y);
+        context2d.fillText(t, x, y);
     }
 }

@@ -1,4 +1,5 @@
 import { DrawableRectangle } from '../../core/drawables/drawable-rectangle.js';
+import { RectCollider } from '../../core/game/game-collider.js';
 import {GameObject} from '../../core/game/game-object.js';
 
 export class Player extends GameObject {
@@ -11,6 +12,7 @@ export class Player extends GameObject {
     }
     create() {
         this.addDrawable(new DrawableRectangle(0,0, this.width, this.length,'white') )
+        this.addCollider(new RectCollider('player', this, 0, 0, this.width, this.length, []))
 
     }
         
@@ -27,11 +29,13 @@ export class Player extends GameObject {
             const gameSize = this.getGameSize();
             this.y = Math.min(this.y, gameSize.height - this.length);
         }
+        this.faster(secondsDifference)
         
     }
-    
-    // create() {
-    //     // this.addDrawable(new DrawableImage(0, 0, size, size, this.getImage('./media/images/asteroid.png')));
-    //     //this.addCollider(new CircleCollider('ASTEROID', this, this.radius, this.radius, this.radius, []));
-    // }
+    faster(secondsDifference){
+        this.speed = this.speed + 1 * secondsDifference
+    }
+    reset(){
+        this.speed=75
+    }
 }
